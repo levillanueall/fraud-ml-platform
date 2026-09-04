@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 import pickle
+from confluent_kafka import Producer
 
 app = FastAPI()
 
@@ -18,6 +19,10 @@ def calculate_risk(transaction: Transaction) -> float:
     features = [[transaction.amount, transaction.hour]]
     probability = model.predict_proba(features)[0][1]  # Probability of fraud
     return probability
+
+producer = Producer({
+    "bootstrap.servers": "kafka:9092"
+})
 
 @app.get("/")
 def root():
